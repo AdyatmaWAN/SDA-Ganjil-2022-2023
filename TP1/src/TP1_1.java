@@ -17,13 +17,15 @@ public class TP1_1 {
     static koki[] listKoki; //list seluruh koki di restoran
     static pelanggan[] listPelangganID; //list seluruh pelanggan di restoran berdasarkan ID
     static Deque<pesanan> listPesanan; //list seluruh pesanan yang masuk ke restoran
-    static int[] advancedScanning;
+
 
     public static void main(String[] args) {
         InputStream inputStream = System.in;
         in = new InputReader(inputStream);
         OutputStream outputStream = System.out;
         out = new PrintWriter(outputStream);
+
+        int[] advancedScanning;
 
         int M = in.nextInt(); //insert makanan
         listMakanan = new makanan[M];
@@ -88,9 +90,12 @@ public class TP1_1 {
 
                     if (checks >= 0) { //merubah status positif negatif
                         status = "-";
+                        advancedScanning[j] = advancedScanning[j-1] + 1;
                     } else {
                         status = "+";
+                        advancedScanning[j] = advancedScanning[j-1] - 1;
                     }
+
                 }
                 /* TODO : all of this
                     mencari apakah pelanggan
