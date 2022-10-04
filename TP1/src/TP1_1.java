@@ -84,7 +84,7 @@ public class TP1_1 {
                     }
                 } else if (status.equals("?")) { //menetukan positif negatif
                     int check = in.nextInt();
-                    int checks = advancedScanning[j - 1] - advancedScanning[j - check];
+                    int checks = advancedScanning[j - 1] - advancedScanning[j - check - 1];
 
                     if (checks >= 0) { //merubah status positif negatif
                         status = "-";
