@@ -141,7 +141,7 @@ public class TP1_1 {
     }
     static void pesan(int idPelanggan, int idMakanan){ //membuat objek pesanan
         listPesanan.add(new pesanan(listPelangganID[idPelanggan-1], listMakanan[idMakanan-1]));
-        pesanan pesananDiLayani = listPesanan.peek();
+        pesanan pesananDiLayani = listPesanan.getLast();
         String tipeMakanan = pesananDiLayani.makanan.makananTipe;
         if (tipeMakanan.equals("A")){
             pesananDiLayani.koki = kokiAir.peek();
@@ -155,7 +155,7 @@ public class TP1_1 {
         }
     }
     static void layani(){ //melayani
-        pesanan pesananDiLayani = listPesanan.peek();
+        pesanan pesananDiLayani = listPesanan.pollFirst();
         pesananDiLayani.pelanggan.pelangganHutang += pesananDiLayani.makanan.makananHarga;
         out.print("\n" + pesananDiLayani.pelanggan.pelangganId);
 
