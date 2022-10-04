@@ -139,7 +139,7 @@ public class TP1_1 {
         }
         out.close();
     }
-    static void pesan(int idPelanggan, int idMakanan){
+    static void pesan(int idPelanggan, int idMakanan){ //membuat objek pesanan
         listPesanan.add(new pesanan(listPelangganID[idPelanggan-1], listMakanan[idMakanan-1]));
         pesanan pesananDiLayani = listPesanan.peek();
         String tipeMakanan = pesananDiLayani.makanan.makananTipe;
@@ -154,7 +154,7 @@ public class TP1_1 {
             out.print("\n" + kokiSea.peek().kokiId);
         }
     }
-    static void layani(){
+    static void layani(){ //melayani
         pesanan pesananDiLayani = listPesanan.peek();
         pesananDiLayani.pelanggan.pelangganHutang += pesananDiLayani.makanan.makananHarga;
         out.print("\n" + pesananDiLayani.pelanggan.pelangganId);
@@ -162,13 +162,13 @@ public class TP1_1 {
         koki kokiTerpilih = pesananDiLayani.koki;
         kokiTerpilih.kokiLayanan += 1;
         if (kokiTerpilih.kokiSpesialisasi.equals("A") && kokiTerpilih == kokiAir.peek()){
-            kokiAir.remove();
+            kokiAir.removeFirst();
             kokiAir.add(kokiTerpilih);
         } else if (kokiTerpilih.kokiSpesialisasi.equals("G") && kokiTerpilih == kokiGround.peek()){
-            kokiGround.remove();
+            kokiGround.removeFirst();
             kokiGround.add(kokiTerpilih);
         } else if (kokiTerpilih.kokiSpesialisasi.equals("S") && kokiTerpilih == kokiSea.peek()){
-            kokiSea.remove();
+            kokiSea.removeFirst();
             kokiSea.add(kokiTerpilih);
         }
     }
