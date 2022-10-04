@@ -17,6 +17,7 @@ public class TP1_1 {
     static koki[] listKoki; //list seluruh koki di restoran
     static pelanggan[] listPelangganID; //list seluruh pelanggan di restoran berdasarkan ID
     static Deque<pesanan> listPesanan; //list seluruh pesanan yang masuk ke restoran
+    static int[] advancedScanning;
 
     public static void main(String[] args) {
         InputStream inputStream = System.in;
@@ -61,25 +62,31 @@ public class TP1_1 {
             int count = 0;
 
             for (int j = 0; j < Pi; j++) {
+                advancedScanning = new int[Pi];
                 int id = in.nextInt();
                 String status = in.next();
                 int uang = in.nextInt();
 
                 //TODO : fix this and make another array for pelanggan based on id
-
-                if (status.equals("?")) { //menetukan positif negatif
-                    int check = in.nextInt();
-                    int positive = 0;
-                    int negative = 0;
-
-                    for (int k = j - check; k < j; k++) { //menghitung positif negatif
-                        if (listPelanggan[k].pelangganStatus.equals("+")) {
-                            positive++;
-                        } else if (listPelanggan[k].pelangganStatus.equals("-")) {
-                            negative++;
+                if (status.equals("+") || status.equals("-")){
+                    if (j == 0){
+                        if (status.equals("+")) {
+                            advancedScanning[j] = -1;
+                        } else {
+                            advancedScanning[j] = 1;
+                        }
+                    } else {
+                        if (status.equals("+")) {
+                            advancedScanning[j] = advancedScanning[j-1] -1;
+                        } else {
+                            advancedScanning[j] = advancedScanning[j-1] +1;
                         }
                     }
-                    if (negative >= positive) { //merubah status positif negatif
+                } else if (status.equals("?")) { //menetukan positif negatif
+                    int check = in.nextInt();
+                    int checks = advancedScanning[j - 1] - advancedScanning[j - check];
+
+                    if (checks >= 0) { //merubah status positif negatif
                         status = "-";
                     } else {
                         status = "+";
@@ -110,6 +117,7 @@ public class TP1_1 {
                         out.print("2 ");
                     }
                 }
+
                 listPelanggan[j] = listPelangganID[id - 1]; //memasukkan pelanggan ke list pelanggan hari ke-i
             }
             out.print("\n");
