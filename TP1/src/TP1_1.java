@@ -32,16 +32,16 @@ public class TP1_1 {
 
         int V = in.nextInt(); //insert koki
         listKoki = new koki[V];
-        for (int i = 0; i < V; i++){
+        for (int i = 0; i < V; i++) {
             String spesialisasi = in.next();
-            listKoki[i] = new koki(i+1, 0, spesialisasi);
+            listKoki[i] = new koki(i + 1, 0, spesialisasi);
             //memasukkan deque untuk koki sesuai spesialisasi agar bisa mengurutkan berdasarkan
             // banyak pelayanan tersedikit (head dari deque)
-            if (spesialisasi.equals("A")){
+            if (spesialisasi.equals("A")) {
                 kokiAir.add(listKoki[i]);
-            } else if (spesialisasi.equals("G")){
+            } else if (spesialisasi.equals("G")) {
                 kokiGround.add(listKoki[i]);
-            } else if (spesialisasi.equals("S")){
+            } else if (spesialisasi.equals("S")) {
                 kokiSea.add(listKoki[i]);
             }
         }
@@ -53,33 +53,33 @@ public class TP1_1 {
 
         int Y = in.nextInt(); //insert total hari
 
-        for (int i = 0; i < Y; i++){ //looping hari
+        for (int i = 0; i < Y; i++) { //looping hari
 
             int Pi = in.nextInt(); //insert pelanggan hari ke-i
             pelanggan[] listPelanggan = new pelanggan[Pi]; //list pelanggan hari ke-i
             listPesanan = new ArrayDeque<pesanan>();
             int count = 0;
 
-            for (int j = 0; j < Pi; j++){
+            for (int j = 0; j < Pi; j++) {
                 int id = in.nextInt();
                 String status = in.next();
                 int uang = in.nextInt();
 
                 //TODO : fix this and make another array for pelanggan based on id
 
-                if (status.equals("?")){ //menetukan positif negatif
+                if (status.equals("?")) { //menetukan positif negatif
                     int check = in.nextInt();
                     int positive = 0;
                     int negative = 0;
 
-                    for (int k = j - check; k < j; k++){ //menghitung positif negatif
-                        if (listPelanggan[k].pelangganStatus.equals("+")){
+                    for (int k = j - check; k < j; k++) { //menghitung positif negatif
+                        if (listPelanggan[k].pelangganStatus.equals("+")) {
                             positive++;
-                        } else if (listPelanggan[k].pelangganStatus.equals("-")){
+                        } else if (listPelanggan[k].pelangganStatus.equals("-")) {
                             negative++;
                         }
                     }
-                    if (negative >= positive){ //merubah status positif negatif
+                    if (negative >= positive) { //merubah status positif negatif
                         status = "-";
                     } else {
                         status = "+";
@@ -92,25 +92,25 @@ public class TP1_1 {
                     masuk RUANG LAPAR (terdaftar sebagai pelanggan keseluruha tapi masuk ruang lapar)
                     MASUK pelayanan restoran (terdaftar sebagai pelanggan keseluruha dan masuk)
                      */
-                if (listPelangganID[id-1] != null){ //menyimpan pelanggan berdasarkan id
-                    listPelangganID[id-1].pelangganStatus = status;
-                    listPelangganID[id-1].pelangganUang = uang;
-                }else {
-                    listPelangganID[id-1] = new pelanggan(id, status, false, uang);
+                if (listPelangganID[id - 1] != null) { //menyimpan pelanggan berdasarkan id
+                    listPelangganID[id - 1].pelangganStatus = status;
+                    listPelangganID[id - 1].pelangganUang = uang;
+                } else {
+                    listPelangganID[id - 1] = new pelanggan(id, status, false, uang);
                 }
-                if (listPelangganID[id-1].pelangganBlacklist == true){
+                if (listPelangganID[id - 1].pelangganBlacklist) {
                     out.print("3 ");
-                } else if (listPelangganID[id-1].pelangganStatus.equals("+")){
+                } else if (listPelangganID[id - 1].pelangganStatus.equals("+")) {
                     out.print("0 ");
-                } else{ // TODO : Implementasi ruang lapar
+                } else { // TODO : Implementasi ruang lapar
                     count++;
-                    if (count <= N){
+                    if (count <= N) {
                         out.print("1 ");
                     } else {
                         out.print("2 ");
                     }
                 }
-                listPelanggan[j] = listPelangganID[id-1]; //memasukkan pelanggan ke list pelanggan hari ke-i
+                listPelanggan[j] = listPelangganID[id - 1]; //memasukkan pelanggan ke list pelanggan hari ke-i
             }
             out.print("\n");
             //setelah pelanggan hari ke-i selesai, mulai pesanan. TODO : Implementasi pesanan
@@ -142,62 +142,67 @@ public class TP1_1 {
         }
         out.close();
     }
-    static void pesan(int idPelanggan, int idMakanan){ //membuat objek pesanan
-        listPesanan.add(new pesanan(listPelangganID[idPelanggan-1], listMakanan[idMakanan-1]));
+
+    static void pesan(int idPelanggan, int idMakanan) { //membuat objek pesanan
+        listPesanan.add(new pesanan(listPelangganID[idPelanggan - 1], listMakanan[idMakanan - 1]));
         pesanan pesananDiLayani = listPesanan.getLast();
         String tipeMakanan = pesananDiLayani.makanan.makananTipe;
-        if (tipeMakanan.equals("A")){
+        if (tipeMakanan.equals("A")) {
             pesananDiLayani.koki = kokiAir.peek();
             out.print(kokiAir.peek().kokiId);
-        } else if (tipeMakanan.equals("G")){
+        } else if (tipeMakanan.equals("G")) {
             pesananDiLayani.koki = kokiGround.peek();
             out.print(kokiGround.peek().kokiId);
-        } else if (tipeMakanan.equals("S")){
+        } else if (tipeMakanan.equals("S")) {
             pesananDiLayani.koki = kokiSea.peek();
             out.print(kokiSea.peek().kokiId);
         }
         out.print("\n");
     }
-    static void layani(){ //melayani
+
+    static void layani() { //melayani
         pesanan pesananDiLayani = listPesanan.pollFirst();
         pesananDiLayani.pelanggan.pelangganHutang += pesananDiLayani.makanan.makananHarga;
         out.print(pesananDiLayani.pelanggan.pelangganId);
 
         koki kokiTerpilih = pesananDiLayani.koki;
         kokiTerpilih.kokiLayanan += 1;
-        if (kokiTerpilih.kokiSpesialisasi.equals("A") && kokiTerpilih == kokiAir.peek()){
+        if (kokiTerpilih.kokiSpesialisasi.equals("A") && kokiTerpilih == kokiAir.peek()) {
             kokiAir.removeFirst();
             kokiAir.add(kokiTerpilih);
-        } else if (kokiTerpilih.kokiSpesialisasi.equals("G") && kokiTerpilih == kokiGround.peek()){
+        } else if (kokiTerpilih.kokiSpesialisasi.equals("G") && kokiTerpilih == kokiGround.peek()) {
             kokiGround.removeFirst();
             kokiGround.add(kokiTerpilih);
-        } else if (kokiTerpilih.kokiSpesialisasi.equals("S") && kokiTerpilih == kokiSea.peek()){
+        } else if (kokiTerpilih.kokiSpesialisasi.equals("S") && kokiTerpilih == kokiSea.peek()) {
             kokiSea.removeFirst();
             kokiSea.add(kokiTerpilih);
         }
         out.print("\n");
     }
-    static void bayar(int idPelanggan){
-        pelanggan pelangganDiLayani = listPelangganID[idPelanggan-1];
-        if (pelangganDiLayani.pelangganHutang > pelangganDiLayani.pelangganUang){
+
+    static void bayar(int idPelanggan) {
+        pelanggan pelangganDiLayani = listPelangganID[idPelanggan - 1];
+        if (pelangganDiLayani.pelangganHutang > pelangganDiLayani.pelangganUang) {
             pelangganDiLayani.pelangganBlacklist = true;
             out.print("0");
-        }else {
+        } else {
             pelangganDiLayani.pelangganUang -= pelangganDiLayani.pelangganHutang;
             out.print("1");
         }
         out.print("\n");
     }
-    static void rankKoki(int nKoki){
+
+    static void rankKoki(int nKoki) {
         //Deque<koki> kokiSeaSort = kokiSea;
-        for (int i = 0; i < nKoki; i++){
+        for (int i = 0; i < nKoki; i++) {
             //out.println("");
-            if (kokiAir.peek() == kokiGround.peek() && kokiGround.peek() == kokiSea.peek()){
+            if (kokiAir.peek() == kokiGround.peek() && kokiGround.peek() == kokiSea.peek()) {
                 //out.print(kokiSea.peek().kokiId);
 
             }
         }
     }
+
     static class InputReader {
         public BufferedReader reader;
         public StringTokenizer tokenizer;
@@ -264,12 +269,12 @@ class makanan {
     }
 }
 
-class pesanan{
+class pesanan {
     pelanggan pelanggan;
     makanan makanan;
     koki koki;
 
-    public pesanan(pelanggan pelanggan, makanan makanan){
+    public pesanan(pelanggan pelanggan, makanan makanan) {
         this.pelanggan = pelanggan;
         this.makanan = makanan;
     }
