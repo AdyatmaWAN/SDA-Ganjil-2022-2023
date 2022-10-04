@@ -189,7 +189,7 @@ public class TP1_1 {
         out.print("\n");
     }
     static void rankKoki(int nKoki){
-        Deque<koki> kokiSeaSort = new ArrayDeque<>();
+        //Deque<koki> kokiSeaSort = kokiSea;
         for (int i = 0; i < nKoki; i++){
             //out.println("");
             if (kokiAir.peek() == kokiGround.peek() && kokiGround.peek() == kokiSea.peek()){
