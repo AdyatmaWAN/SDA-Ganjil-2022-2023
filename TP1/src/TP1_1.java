@@ -1,18 +1,19 @@
 import java.io.*;
-import java.util.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
-
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+// TODO : rubah equals ke "="
 public class TP1_1 {
-    static InputReader in;
+    static FastReader in;
     static PrintWriter out;
 
     // TODO : Merubah deque menjadi array agar bisa for loop dari index terakhir ke index pertama untuk mencari index terkecil
     // atau
     // TODO : Menghubungkan C dengan P dan L
-    static Deque<koki> kokiAir = new ArrayDeque<koki>();
-    static Deque<koki> kokiGround = new ArrayDeque<koki>();
-    static Deque<koki> kokiSea = new ArrayDeque<koki>();
+    static TreeSet<koki> kokiAir = new TreeSet<koki>(koki::compareTo);
+    static TreeSet<koki> kokiGround = new TreeSet<koki>(koki::compareTo);
+    static TreeSet<koki> kokiSea = new TreeSet<koki>(koki::compareTo);
     static makanan[] listMakanan; //list seluruh makanan di restoran
     static koki[] listKoki; //list seluruh koki di restoran
     static pelanggan[] listPelangganID; //list seluruh pelanggan di restoran berdasarkan ID
@@ -21,7 +22,7 @@ public class TP1_1 {
 
     public static void main(String[] args) {
         InputStream inputStream = System.in;
-        in = new InputReader(inputStream);
+        in = new FastReader();
         OutputStream outputStream = System.out;
         out = new PrintWriter(outputStream);
 
@@ -59,7 +60,6 @@ public class TP1_1 {
         for (int i = 0; i < Y; i++) { //looping hari
 
             int Pi = in.nextInt(); //insert pelanggan hari ke-i
-            pelanggan[] listPelanggan = new pelanggan[Pi]; //list pelanggan hari ke-i
             listPesanan = new ArrayDeque<pesanan>();
             int count = 0;
 
@@ -86,8 +86,12 @@ public class TP1_1 {
                     }
                 } else if (status.equals("?")) { //menetukan positif negatif
                     int check = in.nextInt();
-                    int checks = advancedScanning[j - 1] - advancedScanning[j - check - 1];
-
+                    int checks;
+                    if (j - check - 1 <= 0){
+                        checks = advancedScanning[j - 1] + advancedScanning[0];
+                    } else {
+                        checks = advancedScanning[j - 1] - advancedScanning[j - check - 1];
+                    }
                     if (checks >= 0) { //merubah status positif negatif
                         status = "-";
                         advancedScanning[j] = advancedScanning[j-1] + 1;
@@ -122,8 +126,6 @@ public class TP1_1 {
                         out.print("2 ");
                     }
                 }
-
-                listPelanggan[j] = listPelangganID[id - 1]; //memasukkan pelanggan ke list pelanggan hari ke-i
             }
             out.print("\n");
             //setelah pelanggan hari ke-i selesai, mulai pesanan. TODO : Implementasi pesanan
@@ -157,18 +159,19 @@ public class TP1_1 {
     }
 
     static void pesan(int idPelanggan, int idMakanan) { //membuat objek pesanan
+        // TODO : cari koki dulu berdasarkan spesialisasi baru dibikin objek pesanan
         listPesanan.add(new pesanan(listPelangganID[idPelanggan - 1], listMakanan[idMakanan - 1]));
         pesanan pesananDiLayani = listPesanan.getLast();
         String tipeMakanan = pesananDiLayani.makanan.makananTipe;
         if (tipeMakanan.equals("A")) {
-            pesananDiLayani.koki = kokiAir.peek();
-            out.print(kokiAir.peek().kokiId);
+            pesananDiLayani.koki = kokiAir.first();
+            out.print(kokiAir.first().kokiId);
         } else if (tipeMakanan.equals("G")) {
-            pesananDiLayani.koki = kokiGround.peek();
-            out.print(kokiGround.peek().kokiId);
+            pesananDiLayani.koki = kokiGround.first();
+            out.print(kokiGround.first().kokiId);
         } else if (tipeMakanan.equals("S")) {
-            pesananDiLayani.koki = kokiSea.peek();
-            out.print(kokiSea.peek().kokiId);
+            pesananDiLayani.koki = kokiSea.first();
+            out.print(kokiSea.first().kokiId);
         }
         out.print("\n");
     }
@@ -176,21 +179,25 @@ public class TP1_1 {
     static void layani() { //melayani
         pesanan pesananDiLayani = listPesanan.pollFirst();
         pesananDiLayani.pelanggan.pelangganHutang += pesananDiLayani.makanan.makananHarga;
-        out.print(pesananDiLayani.pelanggan.pelangganId);
+        //out.print(pesananDiLayani.pelanggan.pelangganId);
 
         koki kokiTerpilih = pesananDiLayani.koki;
-        kokiTerpilih.kokiLayanan += 1;
-        if (kokiTerpilih.kokiSpesialisasi.equals("A") && kokiTerpilih == kokiAir.peek()) {
-            kokiAir.removeFirst();
+
+        // TODO : ngilngaingin sisa sisa dequeue
+        if (kokiTerpilih.kokiSpesialisasi.equals("A")) {
+            kokiAir.remove(kokiTerpilih);
+            kokiTerpilih.kokiLayanan += 1;
             kokiAir.add(kokiTerpilih);
-        } else if (kokiTerpilih.kokiSpesialisasi.equals("G") && kokiTerpilih == kokiGround.peek()) {
-            kokiGround.removeFirst();
+        } else if (kokiTerpilih.kokiSpesialisasi.equals("G")) {
+            kokiGround.remove(kokiTerpilih);
+            kokiTerpilih.kokiLayanan += 1;
             kokiGround.add(kokiTerpilih);
-        } else if (kokiTerpilih.kokiSpesialisasi.equals("S") && kokiTerpilih == kokiSea.peek()) {
-            kokiSea.removeFirst();
+        } else if (kokiTerpilih.kokiSpesialisasi.equals("S")) {
+            kokiSea.remove(kokiTerpilih);
+            kokiTerpilih.kokiLayanan += 1;
             kokiSea.add(kokiTerpilih);
         }
-        out.print("\n");
+        //out.print("\n");
     }
 
     static void bayar(int idPelanggan) {
@@ -206,59 +213,93 @@ public class TP1_1 {
     }
 
     static void rankKoki(int nKoki) {
-        //Deque<koki> kokiSeaSort = kokiSea;
-        for (int i = 0; i < nKoki; i++) {
-            //out.println("");
-            if (kokiAir.peek() == kokiGround.peek() && kokiGround.peek() == kokiSea.peek()) {
-                //out.print(kokiSea.peek().kokiId);
+        TreeSet<koki> cloneA = (TreeSet<koki>)kokiSea.clone();
 
-            }
-        }
     }
 
-    static class InputReader {
-        public BufferedReader reader;
-        public StringTokenizer tokenizer;
+    static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
 
-        public InputReader(InputStream stream) {
-            reader = new BufferedReader(new InputStreamReader(stream), 32768);
-            tokenizer = null;
+        public FastReader()
+        {
+            br = new BufferedReader(
+                    new InputStreamReader(System.in));
         }
 
-        public String next() {
-            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
+        String next()
+        {
+            while (st == null || !st.hasMoreElements()) {
                 try {
-                    tokenizer = new StringTokenizer(reader.readLine());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    st = new StringTokenizer(br.readLine());
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            return tokenizer.nextToken();
+            return st.nextToken();
         }
 
-        public int nextInt() {
-            return Integer.parseInt(next());
+        int nextInt() { return Integer.parseInt(next()); }
+
+        long nextLong() { return Long.parseLong(next()); }
+
+        double nextDouble()
+        {
+            return Double.parseDouble(next());
+        }
+
+        String nextLine()
+        {
+            String str = "";
+            try {
+                if(st.hasMoreTokens()){
+                    str = st.nextToken("\n");
+                }
+                else{
+                    str = br.readLine();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            return str;
         }
     }
 }
 
-class koki {
+class koki implements Comparable<koki> {
 
     int kokiId;
     int kokiLayanan;
-    String kokiSpesialisasi;
+    String kokiSpesialisasi; // TODO : menjadikan int biar comparablenya enak
 
     public koki(int id, int layanan, String spesialisasi) {
         this.kokiId = id;
         this.kokiLayanan = layanan;
         this.kokiSpesialisasi = spesialisasi;
     }
+    public int compareTo(koki koki) {
+        if (this.kokiLayanan < koki.kokiLayanan) {
+            return -1;
+        } else if (this.kokiLayanan > koki.kokiLayanan) {
+            return 1;
+        } else {
+            if (this.kokiId < koki.kokiId) {
+                return -1;
+            } else if (this.kokiId > koki.kokiId) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
 }
 
 class pelanggan {
 
     int pelangganId;
-    String pelangganStatus;
+    String pelangganStatus; // TODO : ganti int
     boolean pelangganBlacklist;
     long pelangganUang;
     long pelangganHutang;
@@ -273,7 +314,7 @@ class pelanggan {
 }
 
 class makanan {
-    String makananTipe;
+    String makananTipe; // TODO : ganti int
     int makananHarga;
 
     public makanan(int harga, String tipe) {
