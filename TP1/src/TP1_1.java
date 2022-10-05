@@ -165,15 +165,15 @@ public class TP1_1 {
         String tipeMakanan = pesananDiLayani.makanan.makananTipe;
         if (tipeMakanan.equals("A")) {
             pesananDiLayani.koki = kokiAir.first();
-            out.print(kokiAir.first().kokiId);
+            //out.print(kokiAir.first().kokiId);
         } else if (tipeMakanan.equals("G")) {
             pesananDiLayani.koki = kokiGround.first();
-            out.print(kokiGround.first().kokiId);
+            //out.print(kokiGround.first().kokiId);
         } else if (tipeMakanan.equals("S")) {
             pesananDiLayani.koki = kokiSea.first();
-            out.print(kokiSea.first().kokiId);
+            //out.print(kokiSea.first().kokiId);
         }
-        out.print("\n");
+        //out.print("\n");
     }
 
     static void layani() { //melayani
@@ -209,6 +209,7 @@ public class TP1_1 {
             pelangganDiLayani.pelangganUang -= pelangganDiLayani.pelangganHutang;
             out.print("1");
         }
+        pelangganDiLayani.pelangganHutang = 0;
         out.print("\n");
     }
 
