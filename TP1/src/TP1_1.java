@@ -14,8 +14,8 @@ public class TP1_1 {
     static TreeSet<koki> kokiAir = new TreeSet<koki>(koki::compareTo);
     static TreeSet<koki> kokiGround = new TreeSet<koki>(koki::compareTo);
     static TreeSet<koki> kokiSea = new TreeSet<koki>(koki::compareTo);
+    static TreeSet<koki> kokiAll = new TreeSet<koki>(koki::compareTo);
     static makanan[] listMakanan; //list seluruh makanan di restoran
-    static koki[] listKoki; //list seluruh koki di restoran
     static pelanggan[] listPelangganID; //list seluruh pelanggan di restoran berdasarkan ID
     static Deque<pesanan> listPesanan; //list seluruh pesanan yang masuk ke restoran
 
@@ -31,23 +31,33 @@ public class TP1_1 {
         int M = in.nextInt(); //insert makanan
         listMakanan = new makanan[M];
         for (int i = 0; i < M; i++) {
-            listMakanan[i] = new makanan(in.nextInt(), in.next());
+            int tipeMakanan;
+            int hargaMakanan = in.nextInt();
+            String namaMakanan = in.next();
+            if (namaMakanan.equals("S")) {
+                tipeMakanan = 0;
+            } else if (namaMakanan.equals("G")) {
+                tipeMakanan = 1;
+            } else {
+                tipeMakanan = 2;
+            }
+            listMakanan[i] = new makanan(hargaMakanan, tipeMakanan);
         }
 
         int V = in.nextInt(); //insert koki
-        listKoki = new koki[V];
         for (int i = 0; i < V; i++) {
-            String spesialisasi = in.next();
-            listKoki[i] = new koki(i + 1, 0, spesialisasi);
-            //memasukkan deque untuk koki sesuai spesialisasi agar bisa mengurutkan berdasarkan
-            // banyak pelayanan tersedikit (head dari deque)
-            if (spesialisasi.equals("A")) {
-                kokiAir.add(listKoki[i]);
-            } else if (spesialisasi.equals("G")) {
-                kokiGround.add(listKoki[i]);
-            } else if (spesialisasi.equals("S")) {
-                kokiSea.add(listKoki[i]);
+            String namaMakanan = in.next();
+            if (namaMakanan.equals("S")) {
+                kokiSea.add(new koki(i + 1, 0, 0));
+                kokiAll.add(new koki(i + 1, 0, 0));
+            } else if (namaMakanan.equals("G")) {
+                kokiGround.add(new koki(i + 1, 0, 1));
+                kokiAll.add(new koki(i + 1, 0, 1));
+            } else {
+                kokiAir.add(new koki(i + 1, 0, 2));
+                kokiAll.add(new koki(i + 1, 0, 2));
             }
+
         }
 
         int P = in.nextInt(); //insert total pelanggan
@@ -62,6 +72,7 @@ public class TP1_1 {
             int Pi = in.nextInt(); //insert pelanggan hari ke-i
             listPesanan = new ArrayDeque<pesanan>();
             int count = 0;
+            int newCheck = 0;
 
             for (int j = 0; j < Pi; j++) {
                 advancedScanning = new int[Pi];
@@ -93,10 +104,10 @@ public class TP1_1 {
                         checks = advancedScanning[j - 1] - advancedScanning[j - check - 1];
                     }
                     if (checks >= 0) { //merubah status positif negatif
-                        status = "-";
+                        newCheck = 1;
                         advancedScanning[j] = advancedScanning[j-1] + 1;
                     } else {
-                        status = "+";
+                        newCheck = 1;
                         advancedScanning[j] = advancedScanning[j-1] - 1;
                     }
 
@@ -109,14 +120,14 @@ public class TP1_1 {
                     MASUK pelayanan restoran (terdaftar sebagai pelanggan keseluruha dan masuk)
                      */
                 if (listPelangganID[id - 1] != null) { //menyimpan pelanggan berdasarkan id
-                    listPelangganID[id - 1].pelangganStatus = status;
+                    listPelangganID[id - 1].pelangganStatus = newCheck;
                     listPelangganID[id - 1].pelangganUang = uang;
                 } else {
-                    listPelangganID[id - 1] = new pelanggan(id, status, false, uang);
+                    listPelangganID[id - 1] = new pelanggan(id, newCheck, false, uang);
                 }
                 if (listPelangganID[id - 1].pelangganBlacklist) {
                     out.print("3 ");
-                } else if (listPelangganID[id - 1].pelangganStatus.equals("+")) {
+                } else if (listPelangganID[id - 1].pelangganStatus == -1) {
                     out.print("0 ");
                 } else { // TODO : Implementasi ruang lapar
                     count++;
@@ -160,44 +171,57 @@ public class TP1_1 {
 
     static void pesan(int idPelanggan, int idMakanan) { //membuat objek pesanan
         // TODO : cari koki dulu berdasarkan spesialisasi baru dibikin objek pesanan
-        listPesanan.add(new pesanan(listPelangganID[idPelanggan - 1], listMakanan[idMakanan - 1]));
-        pesanan pesananDiLayani = listPesanan.getLast();
+        makanan makanan = listMakanan[idMakanan - 1];
+        int tipeMakanan = makanan.makananTipe;
+        koki koki;
+        if (tipeMakanan == 0){
+            koki = kokiSea.first();
+        } else if (tipeMakanan == 1){
+            koki = kokiGround.first();
+        } else {
+            koki = kokiAir.first();
+        }
+        out.print(koki.kokiId);
+        listPesanan.add(new pesanan(listPelangganID[idPelanggan - 1], makanan, koki));
+        /*pesanan pesananDiLayani = listPesanan.getLast();
         String tipeMakanan = pesananDiLayani.makanan.makananTipe;
         if (tipeMakanan.equals("A")) {
             pesananDiLayani.koki = kokiAir.first();
-            //out.print(kokiAir.first().kokiId);
+            out.print(kokiAir.first().kokiId);
         } else if (tipeMakanan.equals("G")) {
             pesananDiLayani.koki = kokiGround.first();
-            //out.print(kokiGround.first().kokiId);
+            out.print(kokiGround.first().kokiId);
         } else if (tipeMakanan.equals("S")) {
             pesananDiLayani.koki = kokiSea.first();
-            //out.print(kokiSea.first().kokiId);
-        }
-        //out.print("\n");
+            out.print(kokiSea.first().kokiId);
+        }*/
+        out.print("\n");
     }
 
     static void layani() { //melayani
         pesanan pesananDiLayani = listPesanan.pollFirst();
         pesananDiLayani.pelanggan.pelangganHutang += pesananDiLayani.makanan.makananHarga;
-        //out.print(pesananDiLayani.pelanggan.pelangganId);
+        out.print(pesananDiLayani.pelanggan.pelangganId);
 
         koki kokiTerpilih = pesananDiLayani.koki;
+        kokiAll.remove(kokiTerpilih);
 
         // TODO : ngilngaingin sisa sisa dequeue
-        if (kokiTerpilih.kokiSpesialisasi.equals("A")) {
+        if (kokiTerpilih.kokiSpesialisasi == 2) {
             kokiAir.remove(kokiTerpilih);
             kokiTerpilih.kokiLayanan += 1;
             kokiAir.add(kokiTerpilih);
-        } else if (kokiTerpilih.kokiSpesialisasi.equals("G")) {
+        } else if (kokiTerpilih.kokiSpesialisasi == 1) {
             kokiGround.remove(kokiTerpilih);
             kokiTerpilih.kokiLayanan += 1;
             kokiGround.add(kokiTerpilih);
-        } else if (kokiTerpilih.kokiSpesialisasi.equals("S")) {
+        } else if (kokiTerpilih.kokiSpesialisasi == 1) {
             kokiSea.remove(kokiTerpilih);
             kokiTerpilih.kokiLayanan += 1;
             kokiSea.add(kokiTerpilih);
         }
-        //out.print("\n");
+        kokiAll.add(kokiTerpilih);
+        out.print("\n");
     }
 
     static void bayar(int idPelanggan) {
@@ -214,8 +238,12 @@ public class TP1_1 {
     }
 
     static void rankKoki(int nKoki) {
-        TreeSet<koki> cloneA = (TreeSet<koki>)kokiSea.clone();
-
+        TreeSet<koki> kokiAllClone = (TreeSet<koki>)kokiAll.clone();
+        for (int k = 0; k < nKoki; k++) {
+            koki kokiTerpilih = kokiAllClone.pollFirst();
+            out.print(kokiTerpilih.kokiId + " ");
+        }
+        out.print("\n");
     }
 
     static class FastReader {
@@ -273,9 +301,9 @@ class koki implements Comparable<koki> {
 
     int kokiId;
     int kokiLayanan;
-    String kokiSpesialisasi; // TODO : menjadikan int biar comparablenya enak
+    int kokiSpesialisasi; // TODO : menjadikan int biar comparablenya enak
 
-    public koki(int id, int layanan, String spesialisasi) {
+    public koki(int id, int layanan, int spesialisasi) {
         this.kokiId = id;
         this.kokiLayanan = layanan;
         this.kokiSpesialisasi = spesialisasi;
@@ -286,12 +314,18 @@ class koki implements Comparable<koki> {
         } else if (this.kokiLayanan > koki.kokiLayanan) {
             return 1;
         } else {
-            if (this.kokiId < koki.kokiId) {
+            if (this.kokiSpesialisasi < koki.kokiSpesialisasi) {
                 return -1;
-            } else if (this.kokiId > koki.kokiId) {
+            } else if (this.kokiSpesialisasi > koki.kokiSpesialisasi) {
                 return 1;
             } else {
-                return 0;
+                if (this.kokiId < koki.kokiId) {
+                    return -1;
+                } else if (this.kokiId > koki.kokiId) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             }
         }
     }
@@ -300,12 +334,12 @@ class koki implements Comparable<koki> {
 class pelanggan {
 
     int pelangganId;
-    String pelangganStatus; // TODO : ganti int
+    int pelangganStatus; // TODO : ganti int
     boolean pelangganBlacklist;
     long pelangganUang;
     long pelangganHutang;
 
-    public pelanggan(int id, String pelangganStatus, boolean pelangganBlacklist, int pelangganUang) {
+    public pelanggan(int id, int pelangganStatus, boolean pelangganBlacklist, int pelangganUang) {
         this.pelangganId = id;
         this.pelangganStatus = pelangganStatus;
         this.pelangganBlacklist = pelangganBlacklist;
@@ -315,10 +349,10 @@ class pelanggan {
 }
 
 class makanan {
-    String makananTipe; // TODO : ganti int
+    int makananTipe;
     int makananHarga;
 
-    public makanan(int harga, String tipe) {
+    public makanan(int harga, int tipe) {
         this.makananTipe = tipe;
         this.makananHarga = harga;
     }
@@ -329,8 +363,9 @@ class pesanan {
     makanan makanan;
     koki koki;
 
-    public pesanan(pelanggan pelanggan, makanan makanan) {
+    public pesanan(pelanggan pelanggan, makanan makanan, koki koki) {
         this.pelanggan = pelanggan;
         this.makanan = makanan;
+        this.koki = koki;
     }
 }
