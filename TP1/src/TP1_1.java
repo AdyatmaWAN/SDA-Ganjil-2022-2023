@@ -72,62 +72,93 @@ public class TP1_1 {
             int Pi = in.nextInt(); //insert pelanggan hari ke-i
             listPesanan = new ArrayDeque<pesanan>();
             int count = 0;
-            int newCheck = 0;
-
+            int statusBaru = 0;
+            advancedScanning = new int[Pi];
             for (int j = 0; j < Pi; j++) {
-                advancedScanning = new int[Pi];
                 int id = in.nextInt();
                 String status = in.next();
                 int uang = in.nextInt();
-
-                //TODO : fix this and make another array for pelanggan based on id
+                /*
                 if (status.equals("+") || status.equals("-")){
                     if (j == 0){
                         if (status.equals("+")) {
                             advancedScanning[j] = -1;
+                            statusBaru = -1;
                         } else {
                             advancedScanning[j] = 1;
+                            statusBaru = 1;
                         }
                     } else {
                         if (status.equals("+")) {
                             advancedScanning[j] = advancedScanning[j-1] -1;
+                            statusBaru = -1;
                         } else {
                             advancedScanning[j] = advancedScanning[j-1] +1;
+                            statusBaru = 1;
                         }
                     }
                 } else if (status.equals("?")) { //menetukan positif negatif
                     int check = in.nextInt();
                     int checks;
-                    if (j - check - 1 <= 0){
-                        checks = advancedScanning[j - 1] + advancedScanning[0];
+                    if (j - check - 1 < 0){
+                        checks = advancedScanning[j - 1];
                     } else {
                         checks = advancedScanning[j - 1] - advancedScanning[j - check - 1];
                     }
                     if (checks >= 0) { //merubah status positif negatif
-                        newCheck = 1;
+                        statusBaru = 1;
                         advancedScanning[j] = advancedScanning[j-1] + 1;
+
                     } else {
-                        newCheck = 1;
+                        statusBaru = -1;
                         advancedScanning[j] = advancedScanning[j-1] - 1;
                     }
 
+                }*/
+                if (status.equals("+")){
+                    if (j == 0){
+                        advancedScanning[j] = 1;
+                        statusBaru = 1;
+                    } else {
+                        advancedScanning[j] = advancedScanning[j-1] + 1;
+                        statusBaru = 1;
+                    }
+                } else if (status.equals("-")){
+                    if (j == 0){
+                        advancedScanning[j] = -1;
+                        statusBaru = -1;
+                    } else {
+                        advancedScanning[j] = advancedScanning[j-1] - 1;
+                        statusBaru = -1;
+                    }
+                } else {
+                    int rangeCheck = in.nextInt();
+                    int hasilScan = 0;
+                    if (j - rangeCheck - 1 < 0){
+                        hasilScan = advancedScanning[j - 1];
+                    } else {
+                        hasilScan = advancedScanning[j - 1] - advancedScanning[j - rangeCheck - 1];
+                    }
+                    if (hasilScan > 0) {
+                        statusBaru = 1;
+                        advancedScanning[j] = advancedScanning[j-1] + 1;
+
+                    } else {
+                        statusBaru = -1;
+                        advancedScanning[j] = advancedScanning[j-1] - 1;
+                    }
+                    //out.println(hasilScan);
                 }
-                /* TODO : all of this
-                    mencari apakah pelanggan
-                    di BLACKLIST (terdaftar sebagai pelanggan keseluruha tapi tidak masuk),
-                    POSITIF (terdaftar sebagai pelanggan keseluruha tapi tidak masuk),
-                    masuk RUANG LAPAR (terdaftar sebagai pelanggan keseluruha tapi masuk ruang lapar)
-                    MASUK pelayanan restoran (terdaftar sebagai pelanggan keseluruha dan masuk)
-                     */
+
                 if (listPelangganID[id - 1] != null) { //menyimpan pelanggan berdasarkan id
-                    listPelangganID[id - 1].pelangganStatus = newCheck;
+                    listPelangganID[id - 1].pelangganStatus = statusBaru;
                     listPelangganID[id - 1].pelangganUang = uang;
                 } else {
-                    listPelangganID[id - 1] = new pelanggan(id, newCheck, false, uang);
+                    listPelangganID[id - 1] = new pelanggan(id, statusBaru, false, uang);
                 }
                 if (listPelangganID[id - 1].pelangganBlacklist) {
                     out.print("3 ");
-                } else if (listPelangganID[id - 1].pelangganStatus == -1) {
+                } else if (listPelangganID[id - 1].pelangganStatus == 1) {
                     out.print("0 ");
                 } else { // TODO : Implementasi ruang lapar
                     count++;
@@ -138,6 +169,7 @@ public class TP1_1 {
                     }
                 }
             }
+//            out.println(advancedScanning.toString());
             out.print("\n");
             //setelah pelanggan hari ke-i selesai, mulai pesanan. TODO : Implementasi pesanan
             int Xi = in.nextInt(); //insert pesanan hari ke-i
@@ -163,6 +195,17 @@ public class TP1_1 {
                     int nKoki = in.nextInt();
                     rankKoki(nKoki);
 
+                } else if (pesanan.equals("D")) {
+                    int hargaMakanan = 0;
+                    int hargaA = in.nextInt();
+                    int hargaG = in.nextInt();
+                    int hargaS = in.nextInt();
+                    for (int n = 0; n < listMakanan.length; n++) {
+                        if (listMakanan[n] != null) {
+                            hargaMakanan += listMakanan[n].makananHarga;
+                        }
+                    }
+                    out.println(hargaMakanan);
                 }
             }
         }
@@ -181,7 +224,7 @@ public class TP1_1 {
         } else {
             koki = kokiAir.first();
         }
-        out.print(koki.kokiId);
+        out.println(koki.kokiId);
         listPesanan.add(new pesanan(listPelangganID[idPelanggan - 1], makanan, koki));
         /*pesanan pesananDiLayani = listPesanan.getLast();
         String tipeMakanan = pesananDiLayani.makanan.makananTipe;
@@ -195,18 +238,16 @@ public class TP1_1 {
             pesananDiLayani.koki = kokiSea.first();
             out.print(kokiSea.first().kokiId);
         }*/
-        out.print("\n");
     }
 
     static void layani() { //melayani
         pesanan pesananDiLayani = listPesanan.pollFirst();
         pesananDiLayani.pelanggan.pelangganHutang += pesananDiLayani.makanan.makananHarga;
-        out.print(pesananDiLayani.pelanggan.pelangganId);
+        out.println(pesananDiLayani.pelanggan.pelangganId);
 
         koki kokiTerpilih = pesananDiLayani.koki;
         kokiAll.remove(kokiTerpilih);
 
-        // TODO : ngilngaingin sisa sisa dequeue
         if (kokiTerpilih.kokiSpesialisasi == 2) {
             kokiAir.remove(kokiTerpilih);
             kokiTerpilih.kokiLayanan += 1;
@@ -215,26 +256,24 @@ public class TP1_1 {
             kokiGround.remove(kokiTerpilih);
             kokiTerpilih.kokiLayanan += 1;
             kokiGround.add(kokiTerpilih);
-        } else if (kokiTerpilih.kokiSpesialisasi == 1) {
+        } else if (kokiTerpilih.kokiSpesialisasi == 0) {
             kokiSea.remove(kokiTerpilih);
             kokiTerpilih.kokiLayanan += 1;
             kokiSea.add(kokiTerpilih);
         }
         kokiAll.add(kokiTerpilih);
-        out.print("\n");
     }
 
     static void bayar(int idPelanggan) {
         pelanggan pelangganDiLayani = listPelangganID[idPelanggan - 1];
         if (pelangganDiLayani.pelangganHutang > pelangganDiLayani.pelangganUang) {
             pelangganDiLayani.pelangganBlacklist = true;
-            out.print("0");
+            out.println("0");
         } else {
             pelangganDiLayani.pelangganUang -= pelangganDiLayani.pelangganHutang;
-            out.print("1");
+            out.println("1");
         }
         pelangganDiLayani.pelangganHutang = 0;
-        out.print("\n");
     }
 
     static void rankKoki(int nKoki) {
@@ -243,7 +282,7 @@ public class TP1_1 {
             koki kokiTerpilih = kokiAllClone.pollFirst();
             out.print(kokiTerpilih.kokiId + " ");
         }
-        out.print("\n");
+        out.println();
     }
 
     static class FastReader {
