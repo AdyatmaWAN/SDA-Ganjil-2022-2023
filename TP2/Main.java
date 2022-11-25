@@ -1,8 +1,6 @@
 import java.io.*;
 import java.util.StringTokenizer;
 
-//tc34 eval error
-
 public class Main {
 
     static FastReader in;
@@ -25,13 +23,13 @@ public class Main {
         arr_mesin = new Mesin[n];
         for (int i = 0; i < n; i++) { // loop sebanyak jumlah mesin
             if (i == 0) { // membuat linked list
-                mesin_pertama = new Mesin(i+1);
+                mesin_pertama = new Mesin(i+1); //membuat mesin pertama
                 mesin_now = mesin_pertama;
                 mesin_terakhir = mesin_pertama;
                 mesin_now.next = mesin_terakhir;
                 mesin_now.prev = mesin_terakhir;
             } else {
-                mesin_now.next = new Mesin(i+1);
+                mesin_now.next = new Mesin(i+1); //membuat mesin selanjutnya
                 mesin_now.next.prev = mesin_now;
                 mesin_now = mesin_now.next;
                 mesin_now.next = mesin_pertama;
@@ -43,18 +41,19 @@ public class Main {
                 int a = in.nextInt();
                 mesin_now.total_score += a;
                 mesin_now.popularity++;
-                mesin_now.tree.root = mesin_now.tree.insertNode(mesin_now.tree.root, a);
+                mesin_now.tree.root = mesin_now.tree.insertNode(mesin_now.tree.root, a); //insert node
             }
 //            mesin_now.tree.printTree(mesin_now.tree.root, "", true, out);
         }
-        mesin_now = mesin_pertama;
+        mesin_now = mesin_pertama; //mengarahkan mesin_now ke mesin pertama setelah diinitiate semua mesin
 
 
 
         int l = in.nextInt(); // jumlah query
 
-        for (int i = 0; i < l; i++) {
-            String cmd = in.next();
+        for (int i = 0; i < l; i++) { //banyak query dilakukan
+            String cmd = in.next(); //command
+
             if (cmd.equals("MAIN")) {
                 int a = in.nextInt();
                 mesin_now.total_score += a;
@@ -66,7 +65,9 @@ public class Main {
                 }
                 mesin_now.popularity++;
                 mesin_now.tree.root = mesin_now.tree.handleQueryMain(mesin_now.tree.root, a, rank, out);
+
             } else if (cmd.equals("GERAK")) {
+
                 cmd = in.next();
                 if (cmd.equals("KANAN")) {
                     mesin_now = mesin_now.next;
@@ -74,6 +75,7 @@ public class Main {
                     mesin_now = mesin_now.prev;
                 }
                 out.println(mesin_now.id);
+
             } else if (cmd.equals("HAPUS")) {
                 int a = in.nextInt();
                 mesin_now.tree.handleQueryHapus(a, mesin_now, score, out); //TODO: handle geser jika rusak
@@ -92,15 +94,19 @@ public class Main {
                         mesin_now.prev = mesin_terakhir;
                         mesin_now.next = mesin_pertama;
                         mesin_pertama.prev = mesin_now;
+                        mesin_terakhir = mesin_now;
                         mesin_now = temp;
                     }
                 }
+
             } else if (cmd.equals("LIHAT")) {
                 int a = in.nextInt();
                 int b = in.nextInt();
                 mesin_now.tree.handleQueryLihat(a, b, mesin_now, out);
+
             } else if (cmd.equals("EVALUASI")) {
-                handleQueryEvaluasi();
+                handleQueryEvaluasi(n);
+
             }
 //            mesin_now.tree.printTree(mesin_now.tree.root, "", true, out);
         }
@@ -111,7 +117,7 @@ public class Main {
 
     }
 
-    static void handleQueryEvaluasi() {
+    static void handleQueryEvaluasi(int count) {
         Mesin pointer;
         int counter = 0;
         arr_mesin[0] = mesin_pertama;
@@ -121,26 +127,29 @@ public class Main {
             arr_mesin[counter] = pointer;
             pointer = pointer.next;
         }
-        sort(arr_mesin, 0, counter);
-        for (int k = 0; k <=counter; k++){
-            if (k == 0) {
-                arr_mesin[0].prev = arr_mesin[counter];
+        sort(arr_mesin, 0, count-1);
+        mesin_pertama = arr_mesin[0];
+        mesin_terakhir = arr_mesin[count - 1];
+        for (int k = 0; k < count; k++){
+            if (arr_mesin[k] == mesin_pertama) {
+                arr_mesin[0].prev = mesin_terakhir;
             } else {
                 arr_mesin[k].prev = arr_mesin[k-1];
             }
-            if (k == counter) {
-                arr_mesin[k].next = arr_mesin[0];
+            if (arr_mesin[k] == mesin_terakhir) {
+                arr_mesin[k].next = mesin_pertama;
             } else {
                 arr_mesin[k].next = arr_mesin[k+1];
             }
-//            out.println(mesin_now.id + " " + mesin_now.popularity);
-//            out.println(arr_mesin[k].id + " " + arr_mesin[k].popularity);
-                if (arr_mesin[k] == mesin_now) {
-                    out.println(k+1);
-                }
+            //out.println(arr_mesin[k].id + " " + arr_mesin[k].popularity);
+
+            if (arr_mesin[k] == mesin_now) {
+                out.println(k+1);
+            }
         }
     }
 
+    //gfg merge sort https://www.geeksforgeeks.org/merge-sort/
     static void merge(Mesin arr[], int l, int m, int r) {
         // Find sizes of two subarrays to be merged
         int n1 = m - l + 1;
@@ -270,10 +279,11 @@ class Node { //node for every score
     }
 }
 
-class AVLTree {
+//some method based of gfg avl tree https://www.geeksforgeeks.org/insertion-in-an-avl-tree/
+class AVLTree { //implements avl tree
     Node root;
 
-    void printTree(Node currPtr, String indent, boolean last, PrintWriter out){
+    void printTree(Node currPtr, String indent, boolean last, PrintWriter out){ //print tree untuk debugging
         if (currPtr != null) {
             out.print(indent);
             if (last) {
@@ -290,15 +300,15 @@ class AVLTree {
 
     }
 
-    Node handleQueryMain(Node node, int score, int rank, PrintWriter out) { //TODO: ada salah
-        if (node == null) {
+    Node handleQueryMain(Node node, int score, int rank, PrintWriter out) { //
+        if (node == null) { //if node is null, create new node
             out.println(rank+1);
             return (new Node(score));
         }
 
-        node.node_count += 1;
+        node.node_count += 1; //increase node count
 
-        if (score < node.score) {
+        if (score < node.score) { //kecil -> kiri (cari), besar -> kanan (hapus kiri + hapus same.node), sama -> tambah same_score dan rank dikurangi
             node.left = handleQueryMain(node.left, score, rank, out);
         } else if (score > node.score) {
             if (node.left != null) {
@@ -313,28 +323,28 @@ class AVLTree {
                 rank -= node.left.node_count;
             }
             rank += 1;
-            out.println(rank);
-            return node;
+            out.println(rank); //print rank dari kanan
+            return node; //di return
         }
 
-        node.height = 1 + Math.max(height(node.left), height(node.right));
+        node.height = 1 + Math.max(height(node.left), height(node.right)); //update height node
 
-        int balance = getBalance(node);
+        int balance = getBalance(node); //balance the tree if needed
 
-        if (balance > 1 && score < node.left.score) {
+        if (balance > 1 && score < node.left.score) { //node kiri lebih tinggi dan skor lebih kecil dari node kiri
             return rightRotate(node);
         }
 
-        if (balance < -1 && score > node.right.score) {
+        if (balance < -1 && score > node.right.score) { //node kanan lebih tinggi dan skor lebih besar dari node kanan
             return leftRotate(node);
         }
 
-        if (balance > 1 && score > node.left.score) {
+        if (balance > 1 && score > node.left.score) { //node kiri lebih tinggi dan skor lebih besar dari node kiri
             node.left = leftRotate(node.left);
             return rightRotate(node);
         }
 
-        if (balance < -1 && score < node.right.score) {
+        if (balance < -1 && score < node.right.score) { //node kanan lebih tinggi dan skor lebih kecil dari node kanan
             node.right = rightRotate(node.right);
             return leftRotate(node);
         }
@@ -343,7 +353,7 @@ class AVLTree {
     }
 
     void handleQueryHapus(int num_of_score, Mesin mesin, long score, PrintWriter out) {
-        if (num_of_score >= mesin.popularity){
+        if (num_of_score >= mesin.popularity){ //jika jumlah score lebih besar dari popularity dan hapus tree + attribut mesin
             mesin.popularity = 0;
             out.println(mesin.total_score);
             mesin.total_score = 0;
@@ -351,16 +361,16 @@ class AVLTree {
             return;
         }
         score = 0;
-        for (int i = 0; i < num_of_score; i++) {
+        for (int i = 0; i < num_of_score; i++) { //hapus score tertinggi sebanyak num_of_score
             int max = findMax(mesin.tree.root, mesin.tree.root);
             score += max;
             mesin.tree.root = mesin.tree.deleteNode(mesin.tree.root, max);
             //out.println(max);
             //printTree(mesin.tree.root, "", true, out);
         }
-        mesin.popularity -= num_of_score;
+        mesin.popularity -= num_of_score; //kurangi popularity
         mesin.total_score -= score;
-        out.println(score);
+        out.println(score); //print score yang dihapus
     }
 
     void handleQueryLihat(int bottom, int top, Mesin mesin, PrintWriter out) {
@@ -623,21 +633,21 @@ class AVLTree {
 
 }
 
-class Mesin implements Comparable<Mesin>{
+class Mesin implements Comparable<Mesin>{ //implement class mesin
     AVLTree tree;
     long total_score;
     int id, popularity;
     Mesin prev, next;
 
 
-    Mesin(int id) {
+    Mesin(int id) { //constructor
         tree = new AVLTree();
         total_score = 0;
         this.id = id;
         popularity = 0;
     }
 
-    public int compareTo(Mesin o) {
+    public int compareTo(Mesin o) { //compare popularity yang lebih besar, dan id yang lebih kecil
         if (this.popularity == o.popularity){
             return this.id - o.id;
         } else {
