@@ -62,10 +62,10 @@ public class Main {
                 
                 out.println(distance[inTo]);
                 
-                for (int j = 0; j <= inPost; j++) {
-                    out.print(distance[j] + " ");
-                }
-                out.println();
+//                for (int j = 0; j <= inPost; j++) {
+//                    out.print(distance[j] + " ");
+//                }
+//                out.println();
                 
             
             } else if (inCMD.equals("SIMULASI")) {
@@ -179,12 +179,12 @@ public class Main {
 //            out.println(current.getVertex() + " vertex now");
             if (current.getWidth() < distance[current.getLast()] || current.getLast() == src) {
                 if (x > 0) {
-                    out.println(current.getVertex() + " " + current.getWidth());
+//                    out.println(current.getVertex() + " " + current.getWidth());
                     distance[current.getVertex()] = current.getWidth();
                 }
             } else {
                 if (x > 0) {
-                    out.println(current.getVertex() + " " + distance[current.getLast()]);
+//                    out.println(current.getVertex() + " " + distance[current.getLast()]);
                     distance[current.getVertex()] = distance[current.getLast()];
                 }
             }
