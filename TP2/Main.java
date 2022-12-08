@@ -56,38 +56,38 @@ public class Main {
 
             if (cmd.equals("MAIN")) {
                 int a = in.nextInt();
-                mesin_now.total_score += a;
-                if (mesin_now.tree.root == null) {
+                mesin_now.total_score += a; //menambah total score dari mesin saat ini
+                if (mesin_now.tree.root == null) { //jika tree kosong
                     rank = 0;
                 }
                 else {
-                    rank = mesin_now.tree.root.node_count;
+                    rank = mesin_now.tree.root.node_count; //tree tidak kosong, rank = jumlah node
                 }
-                mesin_now.popularity++;
-                mesin_now.tree.root = mesin_now.tree.handleQueryMain(mesin_now.tree.root, a, rank, out);
+                mesin_now.popularity++; //menambah banyaknya mesin dimainkan
+                mesin_now.tree.root = mesin_now.tree.handleQueryMain(mesin_now.tree.root, a, rank, out); //memanggil fungsi handleQueryMain
 
             } else if (cmd.equals("GERAK")) {
 
                 cmd = in.next();
-                if (cmd.equals("KANAN")) {
+                if (cmd.equals("KANAN")) { //menggerakkan mesin ke kanan
                     mesin_now = mesin_now.next;
                 } else {
-                    mesin_now = mesin_now.prev;
+                    mesin_now = mesin_now.prev; //menggerakkan mesin ke kiri
                 }
                 out.println(mesin_now.id);
 
             } else if (cmd.equals("HAPUS")) {
                 int a = in.nextInt();
-                mesin_now.tree.handleQueryHapus(a, mesin_now, score, out); //TODO: handle geser jika rusak
-                if (mesin_now.popularity == 0) {
-                    if (mesin_now == mesin_pertama) {
-                        mesin_pertama = mesin_now.next;
+                mesin_now.tree.handleQueryHapus(a, mesin_now, score, out); //memanggil fungsi handleQueryHapus
+                if (mesin_now.popularity == 0) { //jika semua score dihapus/tidak ada sama sekali skore dalam mesin (dipindah ke barisan terakhir)
+                    if (mesin_now == mesin_pertama) { //jika mesin saat ini mesin pertama
+                        mesin_pertama = mesin_now.next; //mesin selanjutnya jadi mesin pertama, mesin saat ini jadi mesin terakhir
                         mesin_terakhir = mesin_now;
-                        mesin_now = mesin_now.next;
-                    } else if (mesin_now == mesin_terakhir) {
-                        mesin_now = mesin_now.next;
+                        mesin_now = mesin_now.next; //pindah ke mesin selanjutnya
+                    } else if (mesin_now == mesin_terakhir) { //mesin ini mesin terakhir
+                        mesin_now = mesin_now.next; //tidak berubah urutannya, dan pindah ke mesin selanjutnya
                     } else {
-                        mesin_now.prev.next = mesin_now.next;
+                        mesin_now.prev.next = mesin_now.next; //memindahkan mesin yang di urutan tengah menjadi urutan terakhir
                         mesin_now.next.prev = mesin_now.prev;
                         Mesin temp = mesin_now.next;
                         mesin_terakhir.next = mesin_now;
@@ -102,10 +102,10 @@ public class Main {
             } else if (cmd.equals("LIHAT")) {
                 int a = in.nextInt();
                 int b = in.nextInt();
-                mesin_now.tree.handleQueryLihat(a, b, mesin_now, out);
+                mesin_now.tree.handleQueryLihat(a, b, mesin_now, out); //memanggil query handleQueryLihat
 
             } else if (cmd.equals("EVALUASI")) {
-                handleQueryEvaluasi(n);
+                handleQueryEvaluasi(n); //memanggil query handleQueryEvaluasi
 
             }
 //            mesin_now.tree.printTree(mesin_now.tree.root, "", true, out);
@@ -118,7 +118,7 @@ public class Main {
     }
 
     static void handleQueryEvaluasi(int count) {
-        Mesin pointer;
+        Mesin pointer; //memasukkan mesin ke dalam array
         int counter = 0;
         arr_mesin[0] = mesin_pertama;
         pointer = mesin_pertama.next;
@@ -127,7 +127,10 @@ public class Main {
             arr_mesin[counter] = pointer;
             pointer = pointer.next;
         }
-        sort(arr_mesin, 0, count-1);
+
+        sort(arr_mesin, 0, count-1); //sorting mesin yang di array
+
+        //looping untuk membenarkan urutan linkedlist dari mesin yang sudah di sort
         mesin_pertama = arr_mesin[0];
         mesin_terakhir = arr_mesin[count - 1];
         for (int k = 0; k < count; k++){
@@ -141,8 +144,6 @@ public class Main {
             } else {
                 arr_mesin[k].next = arr_mesin[k+1];
             }
-            //out.println(arr_mesin[k].id + " " + arr_mesin[k].popularity);
-
             if (arr_mesin[k] == mesin_now) {
                 out.println(k+1);
             }
@@ -268,10 +269,10 @@ class FastReader {
 }
 
 class Node { //node for every score
-    int score, node_count, height, same_score_count;
-    Node left, right;
+    int score, node_count, height, same_score_count; //atribut node
+    Node left, right; //untuk menyimpan child node
 
-    Node(int score) {
+    Node(int score) { //inisiasi
         this.score = score;
         this.node_count = 1;
         this.height = 1;
@@ -374,10 +375,11 @@ class AVLTree { //implements avl tree
     }
 
     void handleQueryLihat(int bottom, int top, Mesin mesin, PrintWriter out) {
-        if (mesin.popularity == 0){
+        if (mesin.popularity == 0){ //jika popularity 0, print 0
             out.println("0");
             return;
         }
+        //menghitung num of score yang di luar range
         int countUp = rankTop(mesin.tree.root, top);
         int countDown = rankBottom(mesin.tree.root, bottom);
         int count = mesin.tree.root.node_count - countUp - countDown;
